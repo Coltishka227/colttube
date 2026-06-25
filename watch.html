@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Смотреть</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav>
+    <div class="logo">ColtTube</div>
+    <a href="/" class="upload-btn">Главная</a>
+</nav>
+
+<div class="watch-container">
+    <video id="player" controls></video>
+
+    <div class="watch-info">
+        <h2 id="title"></h2>
+        <p id="description"></p>
+    </div>
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const id = params.get("id");
+
+async function loadVideo() {
+    const res = await fetch("/videos");
+    const videos = await res.json();
+
+    const video = videos.find(v => v.id == id);
+
+    if (video) {
+        document.getElementById("player").src = "/uploads/" + video.file;
+        document.getElementById("title").innerText = video.title;
+        document.getElementById("description").innerText = video.description;
+    }
+}
+
+loadVideo();
+</script>
+
+</body>
+</html>

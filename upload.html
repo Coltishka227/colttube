@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Загрузка видео</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav>
+    <div class="logo">ColtTube</div>
+    <a href="index.html" class="upload-btn">Главная</a>
+</nav>
+
+<form id="uploadForm" enctype="multipart/form-data">
+    <h2>Загрузить видео</h2>
+
+    <input type="text" name="title" placeholder="Название видео" required>
+
+    <textarea name="description" placeholder="Описание" required></textarea>
+
+    <label>Видео:</label>
+    <input type="file" name="video" accept="video/*" required>
+
+    <label>Превью:</label>
+    <input type="file" name="thumbnail" accept="image/*" required>
+
+    <button type="submit">Загрузить</button>
+</form>
+
+<script>
+document.getElementById("uploadForm").onsubmit = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+
+    const res = await fetch("/upload", {
+        method: "POST",
+        body: formData
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+        alert("Видео загружено!");
+        window.location.href = "/";
+    }
+};
+</script>
+
+</body>
+</html>
