@@ -2,14 +2,25 @@ const express = require("express");
 const multer = require("multer");
 const cors = require("cors");
 const path = require("path");
+const fs = require("fs");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// ===== MIDDLEWARE =====
 app.use(cors());
 app.use(express.json());
-app.use("/uploads", express.static("uploads"));
 
+// static folders
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use(express.static(path.join(__dirname, "public")));
+
+// ===== CHECK FOLDERS =====
+if (!fs.existsSync("uploads")) {
+  fs.mkdirSync("uploads");
+}
+
+// ===== MULTER CONFIG =====
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "uploads/");
@@ -21,27 +32,37 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// загрузка видео
+// ===== ROUTES =====
+
+// upload video
 app.post("/upload", upload.single("video"), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: "No file uploaded" });
+  }
+
   res.json({
-    message: "Uploaded",
+    message: "Uploaded successfully",
     file: req.file.filename
   });
 });
 
-// список файлов
+// get videos list
 app.get("/videos", (req, res) => {
-  const fs = require("fs");
   const files = fs.readdirSync("uploads");
   res.json(files);
 });
 
-app.get("/", (req, res) => {
-  res.send("ColtTube is running 🚀");
+// API check
+app.get("/api", (req, res) => {
+  res.json({ status: "ColtTube running 🚀" });
 });
 
+// IMPORTANT: frontend
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+// ===== START SERVER =====
 app.listen(PORT, () => {
   console.log("Server running on port", PORT);
 });
-
-app.use(express.static("public"));
