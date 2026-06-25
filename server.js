@@ -1,74 +1,45 @@
 const express = require("express");
 const multer = require("multer");
+const cors = require("cors");
 const path = require("path");
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
-app.use(express.static("public"));
-app.use("/uploads", express.static("uploads"));
+app.use(cors());
 app.use(express.json());
+app.use("/uploads", express.static("uploads"));
 
 const storage = multer.diskStorage({
-    destination: "uploads/",
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + "-" + file.originalname);
-    }
+  destination: (req, file, cb) => {
+    cb(null, "uploads/");
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  }
 });
 
 const upload = multer({ storage });
 
-let videos = [];
-
-app.post("/upload", upload.fields([
-    { name: "video", maxCount: 1 },
-    { name: "thumbnail", maxCount: 1 }
-]), (req, res) => {
-    try {
-        const { title, description } = req.body;
-
-        if (!req.files.video) {
-            return res.status(400).json({
-                success: false,
-                message: "Видео не загружено"
-            });
-        }
-
-        const videoFile = req.files.video[0].filename;
-
-        const thumbnailFile = req.files.thumbnail
-            ? req.files.thumbnail[0].filename
-            : null;
-
-        const video = {
-            id: Date.now(),
-            title,
-            description,
-            file: videoFile,
-            thumbnail: thumbnailFile
-        };
-
-        videos.push(video);
-
-        res.json({
-            success: true,
-            video
-        });
-
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            success: false,
-            message: "Ошибка загрузки"
-        });
-    }
+// загрузка видео
+app.post("/upload", upload.single("video"), (req, res) => {
+  res.json({
+    message: "Uploaded",
+    file: req.file.filename
+  });
 });
 
+// список файлов
 app.get("/videos", (req, res) => {
-    res.json(videos);
+  const fs = require("fs");
+  const files = fs.readdirSync("uploads");
+  res.json(files);
 });
 
-const PORT = process.env.PORT || 3000;
+app.get("/", (req, res) => {
+  res.send("ColtTube is running 🚀");
+});
 
 app.listen(PORT, () => {
-    console.log("ColtTube запущен");
+  console.log("Server running on port", PORT);
 });
