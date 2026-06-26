@@ -32,21 +32,36 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// Upload route
-app.post("/upload", upload.single("video"), (req, res) => {
-  console.log(req.file);
+app.post(
+  "/upload",
+  upload.fields([
+    { name: "video", maxCount: 1 },
+    { name: "thumbnail", maxCount: 1 }
+  ]),
+  (req, res) => {
+    console.log(req.files);
+    console.log(req.body);
 
-  if (!req.file) {
-    return res.status(400).json({
-      error: "No file uploaded"
+    if (!req.files || !req.files.video) {
+      return res.status(400).json({
+        error: "No video uploaded"
+      });
+    }
+
+    const videoFile = req.files.video[0];
+    const thumbnailFile = req.files.thumbnail
+      ? req.files.thumbnail[0]
+      : null;
+
+    res.json({
+      success: true,
+      video: videoFile.filename,
+      thumbnail: thumbnailFile ? thumbnailFile.filename : null,
+      title: req.body.title,
+      description: req.body.description
     });
   }
-
-  res.json({
-    filename: req.file.filename,
-    url: "/uploads/" + req.file.filename
-  });
-});
+);
 
 // Videos list
 app.get("/videos", (req, res) => {
