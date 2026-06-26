@@ -6,19 +6,18 @@ async function loadVideos() {
     container.innerHTML = "";
 
     videos.forEach(video => {
-        container.innerHTML += `
-            <div class="video-card">
-                <video class="thumb" controls width="400">
-                    <source src="${video.url}" type="video/mp4">
-                </video>
+    container.innerHTML += `
+        <div class="video-card">
+            <video class="thumb" controls>
+                <source src="/uploads/${video.name}" type="video/mp4">
+            </video>
 
-                <div class="video-info">
-                    <h3>${video.name}</h3>
-                    <p>Видео ColtTube</p>
-                </div>
+            <div class="video-info">
+                <h3>${video.name}</h3>
             </div>
-        `;
-    });
+        </div>
+    `;
+});
 }
 
 loadVideos();
