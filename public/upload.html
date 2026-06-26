@@ -44,7 +44,7 @@ document.getElementById("uploadForm").onsubmit = async (e) => {
 
     console.log(data);
 
-    if (data.filename) {
+    if (data.success) {
         alert("Видео загружено!");
         window.location.href = "/";
     } else {
