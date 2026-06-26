@@ -42,9 +42,13 @@ document.getElementById("uploadForm").onsubmit = async (e) => {
 
     const data = await res.json();
 
-    if (data.success) {
+    console.log(data);
+
+    if (data.filename) {
         alert("Видео загружено!");
         window.location.href = "/";
+    } else {
+        alert("Ошибка загрузки");
     }
 };
 </script>

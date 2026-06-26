@@ -7,20 +7,18 @@ async function loadVideos() {
 
     videos.forEach(video => {
         container.innerHTML += `
-            <div class="video-card" onclick="openVideo(${video.id})">
-                <img src="${video.thumbnail ? '/uploads/' + video.thumbnail : 'https://via.placeholder.com/400x220?text=No+Thumbnail'}" class="thumb">
+            <div class="video-card">
+                <video class="thumb" controls width="400">
+                    <source src="${video.url}" type="video/mp4">
+                </video>
 
                 <div class="video-info">
-                    <h3>${video.title}</h3>
-                    <p>${video.description}</p>
+                    <h3>${video.name}</h3>
+                    <p>Видео ColtTube</p>
                 </div>
             </div>
         `;
     });
-}
-
-function openVideo(id) {
-    window.location.href = "/watch.html?id=" + id;
 }
 
 loadVideos();
